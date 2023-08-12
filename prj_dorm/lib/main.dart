@@ -4,9 +4,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:prj_dorm/responsive/mobile_screen_layout.dart';
 import 'package:prj_dorm/responsive/responsive_layout_screen.dart';
 import 'package:prj_dorm/responsive/web_screen_layout.dart';
+import 'package:prj_dorm/screens/auth/screen/login_screen.dart';
+import 'package:prj_dorm/screens/auth/screen/signup_screen.dart';
 import 'package:prj_dorm/util/colors.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
@@ -25,9 +28,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: mobileBackgroundColor,
       ),
-      home: const ResponsiveLayout(
-          mobileScreenLayout: MobileScreenLayout(),
-          webScreenLayout: WebScreenLayout()),
+      // home: const ResponsiveLayout(
+      //     mobileScreenLayout: MobileScreenLayout(),
+      //     webScreenLayout: WebScreenLayout()),
+      home: SignupScreen(), //LoginScreen(),
     );
   }
 }
