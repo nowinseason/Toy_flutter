@@ -1,4 +1,7 @@
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:prj_dorm/providers/firebase_providers.dart";
 import "package:prj_dorm/screens/auth/repository/auth_methods.dart";
 import "package:prj_dorm/util/colors.dart";
 import "package:prj_dorm/widgets/text_field_input.dart";
@@ -113,7 +116,11 @@ class _SignupScreenState extends State<SignupScreen> {
               // button login
               InkWell(
                 onTap: () async {
-                  String res = await AuthMethods().signUpUser(
+                  String res = await AuthMethods(
+                    firestore:
+                        FirebaseFirestore.instance, // it could be inefficient
+                    auth: FirebaseAuth.instance, // it could be inefficient
+                  ).signUpUser(
                     email: _emailController.text,
                     password: _passwordController.text,
                     username: _usernameController.text,
