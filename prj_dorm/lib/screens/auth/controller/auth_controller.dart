@@ -11,6 +11,10 @@ class AuthController {
 
   AuthController({required AuthMethods authMethods})
       : _authMethods = authMethods;
+
+  // void signUpUser() async {
+  //   final user = await _authMethods.signUpUser(
+  //       email: String, password: password, username: username, bio: bio);}
 }
 
 // class AuthController {

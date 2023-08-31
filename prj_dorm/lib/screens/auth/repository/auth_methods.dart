@@ -3,7 +3,12 @@ import "dart:typed_data";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:fpdart/fpdart.dart";
+import "package:prj_dorm/constants/constants.dart";
+import "package:prj_dorm/constants/firebase_constants.dart";
+import "package:prj_dorm/models/user_model.dart";
 import "package:prj_dorm/providers/firebase_providers.dart";
+import "package:prj_dorm/util/type_defs.dart";
 import "package:riverpod/riverpod.dart";
 
 final authMethodsProvider = Provider((ref) => AuthMethods(
@@ -19,12 +24,15 @@ class AuthMethods {
   })  : _auth = auth,
         _firestore = firestore;
 
+  CollectionReference get _users =>
+      _firestore.collection(FirebaseConstants.usersCollections);
+
   // sign up user
   Future<String> signUpUser({
     required String email,
     required String password,
     required String username,
-    required String bio,
+    required String bio, //delete bio
     //required Uint8List file,
   }) async {
     String res = "some error occurred"; //result
@@ -37,22 +45,32 @@ class AuthMethods {
         //register users
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+        late UserModel userModel;
 
+        if (cred.additionalUserInfo!.isNewUser) {
+          userModel = UserModel(
+              username: username ?? 'No Name',
+              email: cred.user!.email ?? '',
+              profilePic: cred.user!.photoURL ?? Constants.avatarDefault,
+              banner: Constants.bannerDefault,
+              uid: cred.user!.uid);
+          await _users.doc(cred.user!.uid).set(userModel.toMap());
+        } else {}
+        ;
         print(cred.user!.uid);
         //store in database
-        _firestore.collection('users').doc(cred.user!.uid).set({
-          // not to overwrites
-          'username': username,
-          'uid': cred.user!.uid,
-          'email': email,
-          'bio': bio,
-          // should add more unique user
-        });
+        return res;
       }
     } catch (err) {
+      rethrow;
       res = err.toString();
     }
-    return res;
+    return (res);
+  }
+
+  Stream<UserModel> getUserData(String uid) {
+    return _users.doc(uid).snapshots().map(
+        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 }
 
@@ -77,12 +95,12 @@ class AuthMethods {
 //       final schoolAuth = await schoolUser?.authentification;
 //       final credential = SchoolAuthProvider.credential(
 //         accessToken: schoolAuth.accessToken,
-//         idToken: schoolAuth?.idToken, 
+//         idToken: schoolAuth?.idToken,
 //       );
 //       UserCredential userCredential = _auth.signInWithCredential(credential);
 //     } catch (err){
 //       res = err.toString();
-//     } 
+//     }
 //     return res;
 //   }
 // }
