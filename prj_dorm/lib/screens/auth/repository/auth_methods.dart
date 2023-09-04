@@ -8,6 +8,7 @@ import "package:prj_dorm/constants/constants.dart";
 import "package:prj_dorm/constants/firebase_constants.dart";
 import "package:prj_dorm/models/user_model.dart";
 import "package:prj_dorm/providers/firebase_providers.dart";
+import "package:prj_dorm/util/failure.dart";
 import "package:prj_dorm/util/type_defs.dart";
 import "package:riverpod/riverpod.dart";
 
@@ -27,45 +28,42 @@ class AuthMethods {
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollections);
 
+  Stream<User?> get authStateChange => _auth.authStateChanges();
+
   // sign up user
-  Future<String> signUpUser({
+  FutureEither<UserModel> signUpUser({
     required String email,
     required String password,
     required String username,
     required String bio, //delete bio
     //required Uint8List file,
   }) async {
-    String res = "some error occurred"; //result
+    UserModel userModel;
     try {
-      if (email.isNotEmpty ||
-              password.isNotEmpty ||
-              username.isNotEmpty ||
-              bio.isNotEmpty //||file != null
-          ) {
-        //register users
-        UserCredential cred = await _auth.createUserWithEmailAndPassword(
-            email: email, password: password);
-        late UserModel userModel;
+      //register users
+      UserCredential cred = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
 
-        if (cred.additionalUserInfo!.isNewUser) {
-          userModel = UserModel(
-              username: username ?? 'No Name',
-              email: cred.user!.email ?? '',
-              profilePic: cred.user!.photoURL ?? Constants.avatarDefault,
-              banner: Constants.bannerDefault,
-              uid: cred.user!.uid);
-          await _users.doc(cred.user!.uid).set(userModel.toMap());
-        } else {}
-        ;
-        print(cred.user!.uid);
-        //store in database
-        return res;
+      if (cred.additionalUserInfo!.isNewUser) {
+        userModel = UserModel(
+            username: username ?? 'No Name',
+            email: cred.user!.email ?? '',
+            profilePic: cred.user!.photoURL ?? Constants.avatarDefault,
+            banner: Constants.bannerDefault,
+            uid: cred.user!.uid);
+        await _users.doc(cred.user!.uid).set(userModel.toMap());
+      } else {
+        userModel = await getUserData(cred.user!.uid).first;
       }
+      ;
+      print(cred.user!.uid);
+      //store in database
+      return right(userModel);
+    } on FirebaseException catch (err) {
+      throw err.message!;
     } catch (err) {
-      rethrow;
-      res = err.toString();
+      return left(Failure(err.toString()));
     }
-    return (res);
   }
 
   Stream<UserModel> getUserData(String uid) {
