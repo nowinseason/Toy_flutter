@@ -12,7 +12,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider)!;
+    //final user = ref.watch(userProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -31,9 +31,9 @@ class HomeScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: CircleAvatar(
-              //chat icon
-              backgroundImage: NetworkImage(user.profilePic),
-            ),
+                //chat icon
+                //backgroundImage: NetworkImage(user?.profilePic ?? ''),
+                ),
             onPressed: () {},
           ),
         ],

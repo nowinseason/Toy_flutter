@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prj_dorm/screens/auth/screen/login_screen.dart';
+import 'package:prj_dorm/screens/community/screen/community_screen.dart';
 import 'package:prj_dorm/screens/home/home_screen.dart';
 import 'package:prj_dorm/util/error_text.dart';
 import 'package:prj_dorm/util/loader.dart';
@@ -12,37 +13,31 @@ import 'package:prj_dorm/screens/auth/controller/auth_controller.dart';
 import 'package:prj_dorm/util/colors.dart';
 import 'package:routemaster/routemaster.dart';
 
+import 'screens/community/screen/create_community_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
-  //   const ProviderScope(
-  //     child: MyApp(),
-  //   ),
-  // );
+  //   ProviderScope(
+  //   child: MyApp(),
+  // ));
 }
 
-// class MyApp extends ConsumerStatefulWidget {
+// class MyApp extends ConsumerWidget {
 //   const MyApp({super.key});
 
-//   @override
-//   ConsumerState<ConsumerStatefulWidget> createState() => _MyAppState();
-// }
-
-// class _MyAppState extends ConsumerState<MyApp> {
-//   UserModel? userModel;
-
-//   void getData(WidgetRef ref, User data) async {
-//     userModel = await ref
-//         .watch(AuthControllerProvider.notifier)
-//         .getUserData(data.uid)
-//         .first;
-//     ref.read(userProvider.notifier).update((state) => userModel);
-//     setState(() {});
-//   }
+//   // void getData(WidgetRef ref, User data) async {
+//   //   userModel = await ref
+//   //       .watch(AuthControllerProvider.notifier)
+//   //       .getUserData(data.uid)
+//   //       .first;
+//   //   ref.read(userProvider.notifier).update((state) => userModel);
+//   //   setState(() {});
+//   // }
 
 //   @override
-//   Widget build(BuildContext context) {
+//   Widget build(BuildContext context, WidgetRef ref) {
 //     return ref.watch(authStateChangeProvider).when(
 //         data: (data) => MaterialApp.router(
 //               debugShowCheckedModeBanner: false,
@@ -53,17 +48,17 @@ void main() async {
 //               routerDelegate: RoutemasterDelegate(
 //                 routesBuilder: (context) {
 //                   if (data != null) {
-//                     getData(ref, data);
-//                     if (userModel != null) {
-//                       return loggedInRoute;
-//                     }
+//                     // getData(ref, data);
+//                     // if (userModel != null) {
+//                     return loggedInRoute;
+//                     // }
 //                   }
 //                   return loggedOutRoute;
 //                 },
 //               ),
 //               routeInformationParser: const RoutemasterParser(),
 //             ),
-//         error: (error, StackTrace) => ErrorText(error: error.toString()),
+//         error: (error, stackTrace) => ErrorText(error: error.toString()),
 //         loading: () => const Loader());
 //   }
 // }
@@ -106,7 +101,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    const String mystring = 'hello';
+    return ProviderScope(
+        child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'dormroom',
       theme: ThemeData.dark().copyWith(
@@ -115,7 +112,9 @@ class MyApp extends StatelessWidget {
       // home: const ResponsiveLayout(
       //     mobileScreenLayout: MobileScreenLayout(),
       //     webScreenLayout: WebScreenLayout()),
-      home: LoginScreen(),
-    );
+      home: const CommunityScreen(
+        name: mystring,
+      ),
+    ));
   }
 }

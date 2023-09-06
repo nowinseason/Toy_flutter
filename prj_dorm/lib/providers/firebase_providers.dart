@@ -6,3 +6,4 @@ import 'package:riverpod/riverpod.dart';
 final firestoreProvider = Provider((ref) => FirebaseFirestore.instance);
 final authProvider = Provider((ref) => FirebaseAuth.instance);
 final storageProvider = Provider((ref) => FirebaseStorage.instance);
+//final signUpUserProvider = Provider((ref) => );
